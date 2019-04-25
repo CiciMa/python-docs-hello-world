@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+   <body>
+      <div>Hello this is me!</div>
+      <form action="{{ url_for('user_data')}}", method="POST">
+         Cow ID: <input type="text" name="cowid"><br>
+         Date: <input type="text" name="date"><br>
+         Temperature: <input type="text" name="temp"><br>
+         <input type="submit" value="Submit">
+       </form>
+   </body>
+</html>
