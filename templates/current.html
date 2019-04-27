@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+   <body>
+      <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">DryDays</th>
+                <th scope="col">DaysinMilk</th>
+                <th scope="col">IsMilked</th>
+                <th scope="col">LactationNum</th>
+                <th scope="col">Yield</th>
+                <th scope="col">Conductivity</th>
+                <th scope="col">Fat</th>
+                <th scope="col">Protein</th>
+                <th scope="col">Lactose</th>
+                <th scope="col">Blood</th>
+                <th scope="col">SCC</th>   
+                <th scope="col">Activity</th>
+                <th scope="col">RestTime</th>
+                <th scope="col">RestBout</th>
+                <th scope="col">RestRatio</th>
+                <th scope="col">RestRestlessness</th>
+                <th scope="col">RestPerBout</th>
+                <th scope="col">ActivityDeviation</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for item in cow_data  %}
+              <tr>
+                <th scope="row">{{loop.index}}</th>
+                <td>{{item.Date}}</td>
+                <td>{{item.DryDays}}</td>
+                <td>{{item.DaysinMilk}}</td>
+                <td>{{item.IsMilked}}</td>
+                <td>{{item.LactationNum}}</td>
+                <td>{{item.Yield}}</td>
+                <td>{{item.Conductivity}}</td>
+                <td>{{item.Fat}}</td>
+                <td>{{item.Protein}}</td>
+                <td>{{item.Lactose}}</td>
+                <td>{{item.Blood}}</td>
+                <td>{{item.SCC}}</td>
+                <td>{{item.Activity}}</td>
+                <td>{{item.RestTime}}</td>
+                <td>{{item.RestBout}}</td>
+                <td>{{item.ProdRate}}</td>
+                <td>{{item.RestRatio}}</td>
+                <td>{{item.RestRestlessness}}</td>
+                <td>{{item.RestPerBout}}</td>
+                <td>{{item.ActivityDeviation}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+   </body>
+</html>
