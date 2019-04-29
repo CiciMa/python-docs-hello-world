@@ -6,6 +6,8 @@ import model
 import pydocumentdb.document_client as document_client
 import config_cosmos
 import os
+import urllib.request
+import json
 COW_FOLDER = os.path.join('static', 'cow')
 
 app = Flask(__name__)
@@ -54,6 +56,11 @@ def prediction(cowId):
     # data = request.form
     print("----sending user data---")
     print(cowId)
+    connection = urllib.request.urlopen('http://api.openweathermap.org/data/2.5/weather?zip=14850,us&APPID=3f256d2258cc6fdb387c627fca21ec1e')
+    res = x.read().decode('utf-8')
+    data = json.loads(s)
+    print(data["main"]["temp"])
+    print(data["main"]["humidity"])
     return render_template('prediction.html', cowId = cowId)
 
 @app.route("/preresult/<cowId>", methods=['POST'])
