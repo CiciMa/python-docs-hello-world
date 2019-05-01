@@ -8,14 +8,22 @@
         <div class="container" style="padding-top: 100px;">
                 <div class="row d-flex align-items-center justify-content-center"><h2 style="text-align: center; margin-top: 20px;">I am Cow {{cowId}}</h2></div>
                 <div class="row d-flex align-items-center justify-content-center"><h2 style="text-align: center; margin-top: 20px;">Make prediction of me!</h2></div>
-                <div class="row d-flex align-items-center justify-content-center" style="margin-top: 20px;">
-                   <form action="{{ url_for('preresult', cowId = cowId) }}", method="POST" style="text-align: center;">
-                         <input type="text" class="form-control" placeholder="Humidity" name="humidity"><br>
-                         <input type="text" class="form-control" placeholder="Temperature" name="Temperature"><br>
-                         <!-- Date: <input type="text" name="date"><br>
-                         Temperature: <input type="text" name="temp"><br> -->
-                         <button type="submit" class="btn btn-primary">Submit</button>
-                   </form>
+                <hr>
+                <div class="row d-flex justify-content-center" style="margin-top: 20px;">
+                    <div class="col col-6">
+                        <h4>Choice 1: Real-time weather</h4>
+                        <a href="{{ url_for('preresult_real', cowId = cowId) }}"><button type="button" class="btn btn-primary">Predict</button></a>
+                    </div>
+                    <div class="col col-6">
+                        <h4>Choice 2: User choice</h4>
+                        <form action="{{ url_for('preresult_user', cowId = cowId) }}", method="POST" style="text-align: center;">
+                                <input type="text" class="form-control" placeholder="Humidity" name="humidity"><br>
+                                <input type="text" class="form-control" placeholder="Temperature" name="temp"><br>
+                                <!-- Date: <input type="text" name="date"><br>
+                                Temperature: <input type="text" name="temp"><br> -->
+                                <button type="submit" class="btn btn-primary">Predict</button>
+                        </form>
+                   </div>
                 </div>
           </div>
    </body>

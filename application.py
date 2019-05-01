@@ -2,12 +2,17 @@ from flask import Flask, render_template, request
 import logging
 # import azure.functions as func
 import config_cosmos
-import model
 import pydocumentdb.document_client as document_client
 import config_cosmos
 import os
 import urllib.request
 import json
+
+import sys
+# sys.path.append('/models')
+sys.path.insert(0,'models')
+import model_prediction
+
 COW_FOLDER = os.path.join('static', 'cow')
 
 app = Flask(__name__)
@@ -35,6 +40,7 @@ coll_link = coll['_self']
 @app.route("/")
 def homepage():
     hello_cow = os.path.join(app.config['UPLOAD_FOLDER'], 'hello_cow.png')
+    # print(sys.path.append('/models'))
     return render_template('index.html', cow_hello_image = hello_cow)
 
 @app.route("/choices_data", methods=['POST'])
@@ -42,6 +48,7 @@ def choices_data():
     full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'cute_cow.png')
     data = request.form
     cowId = int(data.get('cowid'))
+    #if cowId not in "model_stats".txt, direct to another template(html), and pass data ="not have a model"
     print(data)
     return render_template('choices.html', cow_image = full_filename, cow_id = cowId)
 
@@ -56,19 +63,38 @@ def prediction(cowId):
     # data = request.form
     print("----sending user data---")
     print(cowId)
+    #check cowId's data less than 100 in "model_stats".txt, direct to another template(html), and pass data ="not have a cow"
+    return render_template('prediction.html', cowId = cowId)
+
+#prediciton result from user choice data
+@app.route("/preresult_user/<cowId>", methods=['POST'])
+def preresult_user(cowId):
+    print("----preresult_user-----")
+    print(cowId)    
+    data = request.form
+    temp = data.get('temp')
+    humidity = data.get('humidity')
+    print(temp, humidity)
+    result = ml_model_result(cowId, float(temp), float(humidity))
+    print(result)
+    return render_template('preresult.html', data = result)
+
+#prediciton result from real-time weather data
+@app.route("/preresult_real/<cowId>")
+def preresult_real(cowId):
+    print("----preresult-----")
+    print(cowId)
     connection = urllib.request.urlopen('http://api.openweathermap.org/data/2.5/weather?zip=14850,us&APPID=3f256d2258cc6fdb387c627fca21ec1e')
     res = connection.read().decode('utf-8')
     data = json.loads(res)
-    print(data["main"]["temp"])
-    print(data["main"]["humidity"])
-    return render_template('prediction.html', cowId = cowId)
-
-@app.route("/preresult/<cowId>", methods=['POST'])
-def preresult(cowId):
-    print("----preresult-----")
-    print(cowId)
-    data = request.form
-    result = model.test()
+    #temp connvert from Kevin to Celsius
+    temp = data["main"]["temp"]
+    temp -= 273.15
+    humidity = data["main"]["humidity"]
+    print(temp)
+    print(humidity)
+    result = ml_model_result(cowId, temp, humidity)
+    print(result)
     return render_template('preresult.html', data = result)
 
 def get_data_from_cosmodb(cowId):
@@ -78,6 +104,16 @@ def get_data_from_cosmodb(cowId):
     docs = client.QueryDocuments(coll_link, query)
     print(list(docs))
     return list(docs)
+
+def ml_model_result(cowId, temp, humidity):
+    pred_result = model_prediction.GetModelAndPredict(cowId, temp, humidity)
+    print(pred_result)
+    if pred_result == None:
+        result = {}
+    else:
+        #'yield', 'fat','protein','lactose'
+        result = {'Yield(gr)' :round(pred_result[0], 2), "Fat(%)": round(pred_result[1], 2), 'Protein(%)': round(pred_result[2], 2), 'Lactose(%)': round(pred_result[3],2)}
+    return result
 
 def post_data_to_cosmodb(cowId, data):
     query = { 'query': ''}
