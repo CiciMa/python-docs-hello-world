@@ -37,6 +37,12 @@ coll_link = coll['_self']
 # coll_post_link = coll_post['_self']
 # cow_data = None
 
+MODEL_FOLDER = str(os.getcwd()) + "/models"
+with open(MODEL_FOLDER + "/model_meta.txt", 'rb') as meta_file:
+        data_limit = json.load(meta_file)['data_limit']
+with open(MODEL_FOLDER + "/model_stats.txt", 'rb') as stats_file:
+        data_stats = json.load(stats_file)
+
 @app.route("/")
 def homepage():
     hello_cow = os.path.join(app.config['UPLOAD_FOLDER'], 'hello_cow.png')
@@ -49,8 +55,11 @@ def choices_data():
     data = request.form
     cowId = int(data.get('cowid'))
     #if cowId not in "model_stats".txt, direct to another template(html), and pass data ="not have a model"
-    print(data)
-    return render_template('choices.html', cow_image = full_filename, cow_id = cowId)
+    if str(cowId) in data_stats:
+        print(data)
+        return render_template('choices.html', cow_image = full_filename, cow_id = cowId)
+    else:
+        return render_template('check.html', sad_cow_image = '/static/cow/sad_cow.png', error = "No cow in our database catches given cow id")
 
 @app.route("/current_data/<cowId>")
 def current_data(cowId):
@@ -64,7 +73,10 @@ def prediction(cowId):
     print("----sending user data---")
     print(cowId)
     #check cowId's data less than 100 in "model_stats".txt, direct to another template(html), and pass data ="not have a cow"
-    return render_template('prediction.html', cowId = cowId)
+    if data_stats[str(cowId)] < data_limit:
+        return render_template('check.html', sad_cow_image = '/static/cow/sad_cow.png', error = "We do not have enough data to produce a model for this cow")
+    else:
+        return render_template('prediction.html', cowId = cowId)
 
 #prediciton result from user choice data
 @app.route("/preresult_user/<cowId>", methods=['POST'])
