@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 import logging
 # import azure.functions as func
 import config_cosmos
@@ -7,6 +7,7 @@ import config_cosmos
 import os
 import urllib.request
 import json
+import time
 
 import sys
 # sys.path.append('/models')
@@ -42,6 +43,8 @@ with open(MODEL_FOLDER + "/model_meta.txt", 'rb') as meta_file:
         data_limit = json.load(meta_file)['data_limit']
 with open(MODEL_FOLDER + "/model_stats.txt", 'rb') as stats_file:
         data_stats = json.load(stats_file)
+
+# time_end = False
 
 @app.route("/")
 def homepage():
@@ -108,6 +111,18 @@ def preresult_real(cowId):
     result = ml_model_result(cowId, temp, humidity)
     print(result)
     return render_template('preresult.html', data = result)
+
+#progress bar
+@app.route('/progress')
+def progress():
+    def generate():
+        x = 0
+        while x <= 100:
+            yield "data:" + str(x) + "\n\n"
+            x = x + 10
+            time.sleep(0.5)
+        # time_end = True
+    return Response(generate(), mimetype='text/event-stream')
 
 def get_data_from_cosmodb(cowId):
     # docs = client.ReadDocuments(coll_link)
