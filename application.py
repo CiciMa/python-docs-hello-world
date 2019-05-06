@@ -59,7 +59,8 @@ def choices_data():
     data = request.form
     cowId = int(data.get('cowid'))
     #if cowId not in "model_stats".txt, direct to another template(html), and pass data ="not have a model"
-    if str(cowId) in data_stats:
+    #if (len(get_data_from_cosmodb(cowId)) != 0):
+    if str(cowId) in data_stats or len(get_data_from_cosmodb(cowId)) != 0:
         print(data)
         return render_template('choices.html', cow_image = full_filename, cow_id = cowId)
     else:
