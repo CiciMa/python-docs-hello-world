@@ -10,10 +10,11 @@ def GetModelAndPredict(cow_id, temperature, humidity):
     path = str(os.getcwd())
     # print(path)
     # print("--end---")
-    with open(path + "/models/model_meta.txt", 'rb') as meta_file:
+    with open(path + "/models/model_meta.txt", 'r' ,encoding='utf-8') as meta_file:
         data_limit = json.load(meta_file)['data_limit']
+        print(data_limit)
         
-    with open(path + "/models/model_stats.txt", 'rb') as stats_file:
+    with open(path + "/models/model_stats.txt", 'r' ,encoding='utf-8') as stats_file:
         data_stats = json.load(stats_file)
         
     if str(cow_id) not in data_stats or data_stats[str(cow_id)] < data_limit: 
@@ -31,4 +32,4 @@ def GetModelAndPredict(cow_id, temperature, humidity):
             results.append(loaded_model.predict([[temperature,humidity]])[0])
     return tuple(results)
 
-print(GetModelAndPredict(4400, 10, 53))
+# print(GetModelAndPredict(4400, 10, 53))

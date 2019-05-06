@@ -13,6 +13,7 @@ import sys
 # sys.path.append('/models')
 sys.path.insert(0,'models')
 import model_prediction
+os.system('pip install -U scikit-learn scipy matplotlib')
 
 COW_FOLDER = os.path.join('static', 'cow')
 
