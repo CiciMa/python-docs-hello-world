@@ -13,7 +13,7 @@ import sys
 # sys.path.append('/models')
 sys.path.insert(0,'models')
 import model_prediction
-os.system('pip install -U scikit-learn scipy matplotlib')
+#os.system('pip install -U scikit-learn scipy matplotlib')
 
 COW_FOLDER = os.path.join('static', 'cow')
 
@@ -78,7 +78,7 @@ def prediction(cowId):
     print("----sending user data---")
     print(cowId)
     #check cowId's data less than 100 in "model_stats".txt, direct to another template(html), and pass data ="not have a cow"
-    if data_stats[str(cowId)] < data_limit:
+    if (str(cowId) not in data_stats) or (data_stats[str(cowId)] < data_limit):
         return render_template('check.html', sad_cow_image = '/static/cow/sad_cow.png', error = "We do not have enough data to produce a model for this cow")
     else:
         return render_template('prediction.html', cowId = cowId)
