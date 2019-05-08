@@ -8,7 +8,7 @@ import os
 import urllib.request
 import json
 import time
-
+import datetime
 import sys
 # sys.path.append('/models')
 sys.path.insert(0,'models')
@@ -32,11 +32,11 @@ coll_query = "select * from r where r.id = '{0}'".format(coll_id)
 coll = list(client.QueryCollections(db_link, coll_query))[0]
 coll_link = coll['_self']
 
-#post machine learning model result into cosmoDB
-# coll_post_id = ''
-# coll_post_query = "select * from r where r.id = '{0}'".format(coll_post_id)
-# coll_post = list(client.QueryCollections(db_link, coll_post_query))[0]
-# coll_post_link = coll_post['_self']
+#post real-time environmental data into cosmoDB
+coll_post_id = 'environdata'
+coll_post_query = "select * from r where r.id = '{0}'".format(coll_post_id)
+coll_post = list(client.QueryCollections(db_link, coll_post_query))[0]
+coll_post_link = coll_post['_self']
 # cow_data = None
 
 MODEL_FOLDER = str(os.getcwd()) + "/models"
@@ -100,7 +100,7 @@ def preresult_user(cowId):
 @app.route("/preresult_real/<cowId>")
 def preresult_real(cowId):
     print("----preresult-----")
-    print(cowId)
+    # print(cowId)
     connection = urllib.request.urlopen('http://api.openweathermap.org/data/2.5/weather?zip=14850,us&APPID=3f256d2258cc6fdb387c627fca21ec1e')
     res = connection.read().decode('utf-8')
     data = json.loads(res)
@@ -108,8 +108,15 @@ def preresult_real(cowId):
     temp = data["main"]["temp"]
     temp -= 273.15
     humidity = data["main"]["humidity"]
-    print(temp)
-    print(humidity)
+    #get current date time
+    date_time = str(datetime.datetime.now()).split(' ')
+    #format current time
+    time = date_time[1].split('.')[0]
+    #format current date
+    date = date_time[0].split('-')
+    date_format = "/".join([date[1], date[2], date[0]])
+    data = {'deviceId': '', 'barnId':'Real Time', 'date': date_format, 'time': time , 'humidity': humidity, 'temp': temp}
+    post_data_to_cosmodb(cowId, data)
     result = ml_model_result(cowId, temp, humidity)
     print(result)
     return render_template('preresult.html', data = result)
@@ -145,7 +152,10 @@ def ml_model_result(cowId, temp, humidity):
     return result
 
 def post_data_to_cosmodb(cowId, data):
-    query = { 'query': ''}
+    document = client.CreateDocument(coll_post_link, data)
+    print("succesfully post")
+    print(list(document))
+    return list(document)
 
 if __name__ == '__main__':
    app.run(debug = True)
