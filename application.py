@@ -148,7 +148,7 @@ def ml_model_result(cowId, temp, humidity):
         result = {}
     else:
         #'yield', 'fat','protein','lactose'
-        result = {'Yield(gr)' :round(pred_result[0], 2), "Fat(%)": round(pred_result[1], 2), 'Protein(%)': round(pred_result[2], 2), 'Lactose(%)': round(pred_result[3],2)}
+        result = { 'Fat(%)': round(pred_result[0], 2), 'Protein(%)': round(pred_result[1], 2), 'Lactose(%)': round(pred_result[2],2)}
     return result
 
 def post_data_to_cosmodb(cowId, data):

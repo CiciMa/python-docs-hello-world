@@ -23,13 +23,14 @@ def GetModelAndPredict(cow_id, temperature, humidity):
         minimum = math.floor(data_stats[str(cow_id)] / 5) * 5
     
     #if there are models for cow_id, return predicted result
-    fields = ['yield', 'fat','protein','lactose']
+    thi = 0.8*temperature + 0.01*humidity*(temperature-14.4) + 46.4
+    fields = ['fat','protein','lactose']
     results = []
     filename = path + "/models/models/"+str(minimum)+"/"+str(cow_id)+".pkl"
     with open(filename, 'rb') as model_file:
         for field in fields:
             loaded_model = pickle.load(model_file)
-            results.append(loaded_model.predict([[temperature,humidity]])[0])
+            results.append(loaded_model.predict([[temperature,humidity, thi]])[0])
     return tuple(results)
 
 # print(GetModelAndPredict(4400, 10, 53))
